@@ -1,0 +1,61 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include "generator.hh"
+
+using namespace std;
+
+MyPrimaryGenerator::MyPrimaryGenerator()
+{
+
+   std::ifstream InFile;
+   InFile.open("./particles.data", std::ifstream::in);
+   int count = 0;
+   double t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+   while (!InFile.eof()) {
+/*
+   t1:   "Impact_x" 
+   t2:   "Impact_y" 
+   t3:   "Impact_z" 
+   t4:   "ImpactPhase" 
+   t5:   "ImpactEnergy"
+   t6:   "NumElectrons"
+   t7:   "momentum_x" 
+   t8:   "momentum_y" 
+   t9:   "momentum_z" 
+   t10:  "FaceID"
+  */
+      InFile >> t1 >> t2 >> t3 >> t4 >> t5 >> t6 >> t7>> t8 >> t9 >> t10;
+      std::cout<< count << " t1  " <<t1 << " t6 " <<t6<<std::endl;
+      fParticleGun = new G4ParticleGun(t6);
+      G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
+      G4String particleName="electrons";
+      G4ParticleDefinition *particle = particleTable->FindParticle("e-");
+
+      G4ThreeVector pos(t1*m, t2*m, t3*m);
+      G4ThreeVector mom(t7, t8, t9);
+      fParticleGun->SetParticlePosition(pos);
+      fParticleGun->SetParticleMomentumDirection(mom);
+      fParticleGun->SetParticleMomentum(t5*eV);
+      fParticleGun->SetParticleDefinition(particle);
+    count++;
+   }
+   std::cout<< count <<std::endl;
+   InFile.close();   
+}
+
+MyPrimaryGenerator::~MyPrimaryGenerator()
+{
+    delete fParticleGun;
+}
+
+void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
+{
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+}
+
+
+
+
+

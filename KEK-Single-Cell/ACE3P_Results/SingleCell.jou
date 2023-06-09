@@ -1,0 +1,32 @@
+reset
+
+#{cav_length = 32.99}
+#{cav_radius = 41.38}
+#{bp_length  = 51.89}
+#{bp_radius  = 10 }
+#{iris_rounding = 2.4}
+
+create Cylinder height {cav_length} radius {cav_radius}
+create Cylinder height {2*bp_length+cav_length} radius {bp_radius}
+unite volume all
+compress ids
+
+modify curve 6 5  blend radius {iris_rounding}
+
+export acis "SingleCell.sat" overwrite
+
+volume all scheme Tetmesh
+volume all sizing function type skeleton scale 5 time_accuracy_level 2 min_size auto max_size 12 max_gradient 1.2
+
+mesh volume all
+Sideset 1 surface 2
+Sideset 2 surface 3
+Sideset 6 surface all except 2 3
+
+block 1 volume all
+block 1 element type tetra10
+volume all scale 0.001
+
+export Genesis  "SingleCell.gen" block all overwrite
+
+

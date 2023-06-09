@@ -1,0 +1,86 @@
+TotalTime:  2
+FieldScales:{
+  Type: FieldGradient     
+  ScanToken: 0 //0           // 1: scan, 0: no scan, must provided 
+  Scale: 21.600e+6       //20.00e+6
+  Minimum: 32.4e+6
+  Maximum: 32.4e+6
+  Interval: 1.0e+6
+}
+
+NormalizedField:{
+  StartPoint: 0.0 0.0 -0.018895 //-0.126475     //-0.017295
+  EndPoint: 0.0 0.0 0.018895    //0.126475        //0.017695
+}
+
+Domain:{
+  FieldDir: ./omega3p_results
+  Bins: 64
+  MaxImpacts: 2
+//  SymmetryFactor: 2
+//  SymmetryPlane: 5
+ // dt: 0.1
+
+}
+
+// Particles emitter
+Emitter:{
+  Type: 7
+  BoundaryID: 6      // particles emit from BoundaryID exterior surface 
+  t0: 0
+  t1: 1
+  x0: -0.042
+  x1:  0.042
+  y0: -0.042 //-0.045
+  y1:  0.042 //0.140
+  z0: -0.02
+  z1:  0.02
+  N: 1
+  WorkFunction: 4.2
+  Beta: 50
+//  ScaleFactor: 10000
+//  FowlerLaw: KEK
+}
+
+Material: {
+  Type: Absorber 
+  BoundarySurfaceID: 1 2  
+}
+
+OutputImpacts: on
+
+OutputImpactsInfo:
+{
+  Type: Geant4
+  BoundarySurfaceID: 6
+}
+Postprocess:{
+  Toggle: off
+  FaradayCup: {
+    Token: on
+    BoundaryID: 1 2 6
+  }
+}
+Material:{
+  Type: Primary
+  BoundarySurfaceID: 6
+}
+
+Material:{
+  Type: Secondary
+  BoundarySurfaceID: 6
+}
+
+/*
+PtrackMonitor:{
+  Type: ElectronsVsEnergy
+  Name: Downstream
+  z: 0.125
+  MaxEnergy: 6e6
+  NumBins: 60
+}
+PtrackMonitor:{
+  Type: ElectronEnergyVsZ
+  Name: ElectronEnergyVsZ
+}
+*/

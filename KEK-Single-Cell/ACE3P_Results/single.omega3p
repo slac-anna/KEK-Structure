@@ -1,0 +1,23 @@
+ModelInfo : {
+  File: ./SingleCell.ncdf
+
+  BoundaryCondition : {
+    Exterior: 6
+    Electric: 1, 2
+  }
+
+  SurfaceMaterial : {
+    ReferenceNumber: 6
+    Sigma: 5.8e7
+  }
+}
+
+FiniteElement: {
+  Order:           2
+  CurvedSurfaces: on
+}
+
+EigenSolver : {
+  NumEigenvalues: 1
+  FrequencyShift:  2.5e9
+}

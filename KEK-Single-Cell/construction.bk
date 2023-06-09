@@ -1,0 +1,95 @@
+#include "construction.hh"
+
+MyDetectorConstruction::MyDetectorConstruction()
+{}
+
+MyDetectorConstruction::~MyDetectorConstruction()
+{}
+
+G4VPhysicalVolume *MyDetectorConstruction::Construct()
+{
+    G4NistManager *nist = G4NistManager::Instance();
+   
+    G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+    G4Material *logicMat = nist->FindOrBuildMaterial("G4_Cu");
+
+    G4double out_cell_r = 50.000*mm;    //cell body outer radius 
+    G4double out_bp_r   = 12.400*mm;    //beampipe outer radius (12.mm in CAD model) 
+    G4double bp_l = 49.490*mm;          //bempipe length
+
+    G4double cr_l = 32.990*mm;    //regular cell length
+    G4double cr_h = 41.380*mm;    //regular cell radius
+
+    G4double bp_r = 10.000*mm;    //beampipe radius
+    G4double bp_disk_r = 2.400*mm; //beampipe disk radius
+
+    G4double cell_disk_a = 4.600*mm; //disk radius_a 
+    G4double cell_disk_b = 2.300*mm; //disk radius_b
+    G4double cell_disk_t = 5.000*mm; //disk tiickness
+      
+    G4double xWorld = 100.000*mm;  
+    G4double yWorld = 100.000*mm;
+    G4double zWorld = 100.000*mm;
+
+    G4Box *solidWorld = new G4Box("solidWorld", xWorld, yWorld, zWorld);
+    G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
+    G4VPhysicalVolume *physWorld = new G4PVPlacement(0,G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0, true);
+
+    //beampipe1 
+    G4Tubs *solidBeampipe1 = new G4Tubs("solidBeampipe1", bp_r, out_bp_r, bp_l/2, 0., 360.*deg);
+    G4LogicalVolume *logicBeampipe1 = new G4LogicalVolume(solidBeampipe1, logicMat, "logicalBeampipe1");
+    G4VPhysicalVolume *physBeampipe1 = new G4PVPlacement(0, G4ThreeVector(0., 0., (-cr_l/2-bp_disk_r-bp_l/2)), logicBeampipe1, "physBeampipe1", logicWorld, false, 0, true);
+
+    //beampipe2
+    G4Tubs *solidBeampipe2 = new G4Tubs("solidBeampipe2", bp_r, out_bp_r, bp_l/2, 0., 360.*deg);
+    G4LogicalVolume *logicBeampipe2 = new G4LogicalVolume(solidBeampipe2, logicMat, "logicalBeampipe2");
+    G4VPhysicalVolume *physBeampipe2 = new G4PVPlacement(0, G4ThreeVector(0., 0., (cr_l/2+bp_disk_r+bp_l/2)), logicBeampipe2, "physBeampipe2", logicWorld, false, 0, true);
+
+    //beampipe disk1-sharp
+    //G4Tubs *solidDisk1 = new G4Tubs("solidDisk1", bp_r, out_cell_r, bp_disk_r/2, 0., 360.*deg);
+    //G4LogicalVolume *logicDisk1 = new G4LogicalVolume(solidDisk1, logicMat, "logicalDisk1");
+    //G4VPhysicalVolume *phyDisk1 = new G4PVPlacement(0, G4ThreeVector(0., 0., (-cr_l/2-bp_disk_r/2)), logicDisk1, "physDisk1", logicWorld, false, 0, true);
+
+    //beampipe disk2-sharp
+    //G4Tubs *solidDisk2 = new G4Tubs("solidDisk2", bp_r, out_cell_r, bp_disk_r/2, 0., 360.*deg);
+    //G4LogicalVolume *logicDisk2 = new G4LogicalVolume(solidDisk2, logicMat, "logicalDisk2");
+    //G4VPhysicalVolume *phyDisk2 = new G4PVPlacement(0, G4ThreeVector(0., 0., (-cr_l/2-bp_disk_r/2)), logicDisk2, "physDisk2", logicWorld, false, 0, true);
+
+    //beampipe disk1-circle
+    G4int numRZ = 9;
+    G4double r[] = {10.*mm, 10.033568*mm, 10.137258*mm, 10.321539*mm, 10.611146*mm, 11.07335*mm, 12.4*mm, 50.0*mm, 50.*mm};
+    G4double z1[] = {-18.895*mm, -18.495*mm, -18.095*mm, -17.695*mm, -17.295*mm, -16.895*mm, -16.495*mm, -16.495*mm, -18.895*mm};
+    G4VSolid* solidDisk1 = new G4GenericPolycone("aPloycone1", 0.*deg, 360.*deg, numRZ, r, z1);
+    G4LogicalVolume *logicDisk1 = new G4LogicalVolume(solidDisk1, logicMat, "logicalDisk1");
+    G4VPhysicalVolume *phyDisk1 = new G4PVPlacement(0, G4ThreeVector(0., 0., 0), logicDisk1, "physDisk1", logicWorld, false, 0, true);
+
+    //beampipe disk2-circle
+    G4double z2[] = {18.895*mm, 18.495*mm, 18.095*mm, 17.695*mm, 17.295*mm, 16.895*mm, 16.495*mm, 16.495*mm, 18.895*mm};
+    G4VSolid* solidDisk2 = new G4GenericPolycone("aPloycone2", 0.*deg, 360.*deg, numRZ, r, z2);
+    G4LogicalVolume *logicDisk2 = new G4LogicalVolume(solidDisk2, logicMat, "logicalDisk2");
+    G4VPhysicalVolume *phyDisk2 = new G4PVPlacement(0, G4ThreeVector(0., 0., 0), logicDisk2, "physDisk2", logicWorld, false, 0, true);
+
+    //cavity wall
+    G4Tubs *solidCell = new G4Tubs("solidCell", cr_h, out_cell_r, cr_l/2, 0., 360.*deg);
+    G4LogicalVolume *logicCell = new G4LogicalVolume(solidCell, logicMat, "logicCell");
+    G4VPhysicalVolume *phyCell = new G4PVPlacement(0, G4ThreeVector(0., 0.,0), logicCell, "physCell", logicWorld, false, 0, true);
+
+    fScoringVolume = logicCell;
+
+    //detector
+    G4Tubs *solidDetector = new G4Tubs("solidDetector", out_cell_r, 100*mm, (bp_disk_r+cr_l/2), 0., 360.*deg); 
+    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
+    G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicDetector, "physDetector", logicWorld, false, 0, true);
+    
+    //fScoringVolume = logicDetector;
+
+    return physWorld;
+}
+
+void MyDetectorConstruction::ConstructSDandField()
+{
+    MySensitiveDetector *sensDet = new
+    MySensitiveDetector("SensitiveDetector");
+
+    logicDetector->SetSensitiveDetector(sensDet);
+}

@@ -1,0 +1,4 @@
+/Users/liling/Desktop/Geant4-Simulations/KEK-structure/KEK-Single-Cell/build/CMakeFiles/sim.dir
+/Users/liling/Desktop/Geant4-Simulations/KEK-structure/KEK-Single-Cell/build/CMakeFiles/Simulation.dir
+/Users/liling/Desktop/Geant4-Simulations/KEK-structure/KEK-Single-Cell/build/CMakeFiles/edit_cache.dir
+/Users/liling/Desktop/Geant4-Simulations/KEK-structure/KEK-Single-Cell/build/CMakeFiles/rebuild_cache.dir
